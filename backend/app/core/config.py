@@ -1,13 +1,20 @@
 """SmartSpend360 — Application Configuration"""
 
+import json
 import os
 from functools import lru_cache
-from typing import List
+from typing import Any, List, Optional
 
-from pydantic_settings import BaseSettings
+from pydantic import field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+    )
+
     # App
     app_name: str = "SmartSpend360"
     app_version: str = "1.0.0"
@@ -20,11 +27,27 @@ class Settings(BaseSettings):
     api_key_name: str = "X-API-Key"
 
     # CORS
-    cors_origins: List[str] = [
+    # Optional[List[str]] instead of List[str] so pydantic-settings sets
+    # allow_parse_failure=True for this field, letting the field_validator
+    # below handle both comma-separated strings and JSON arrays from env vars.
+    cors_origins: Optional[List[str]] = [
         "http://localhost:3000",
         "http://localhost:5173",
-        "https://smartspend360.vercel.app",
+        "https://smartspend360-app-pink.vercel.app",
     ]
+
+    @field_validator("cors_origins", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, v: object) -> object:
+        if isinstance(v, str):
+            v = v.strip()
+            if v.startswith("["):
+                try:
+                    return json.loads(v)
+                except (json.JSONDecodeError, ValueError):
+                    pass
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
+        return v
 
     # AWS
     aws_access_key_id: str = os.getenv("AWS_ACCESS_KEY_ID", "")
@@ -58,10 +81,6 @@ class Settings(BaseSettings):
 
     # Server
     port: int = int(os.getenv("PORT", "8000"))
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
 
 
 @lru_cache

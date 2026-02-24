@@ -62,6 +62,7 @@ DYNAMODB_TABLES = [
             {"AttributeName": "userId", "AttributeType": "S"},
             {"AttributeName": "alertId", "AttributeType": "S"},
         ],
+        "TTLAttribute": "ttl",  # Items expire when writers set a unix-epoch ttl
     },
     {
         "TableName": "ss360-metrics",
@@ -73,6 +74,7 @@ DYNAMODB_TABLES = [
             {"AttributeName": "userId", "AttributeType": "S"},
             {"AttributeName": "date", "AttributeType": "S"},
         ],
+        "TTLAttribute": "ttl",
     },
     {
         "TableName": "ss360-forecasts",
@@ -84,6 +86,7 @@ DYNAMODB_TABLES = [
             {"AttributeName": "userId", "AttributeType": "S"},
             {"AttributeName": "forecastDate", "AttributeType": "S"},
         ],
+        "TTLAttribute": "ttl",
     },
     {
         "TableName": "ss360-pipeline-runs",
@@ -95,6 +98,7 @@ DYNAMODB_TABLES = [
             {"AttributeName": "stage", "AttributeType": "S"},
             {"AttributeName": "runId", "AttributeType": "S"},
         ],
+        "TTLAttribute": "ttl",
     },
 ]
 
@@ -258,6 +262,55 @@ def create_s3_bucket(s3_client, bucket_name: str, region: str, dry_run: bool) ->
         return False
 
 
+def apply_s3_lifecycle(s3_client, bucket_name: str, dry_run: bool) -> bool:
+    """Apply lifecycle rules to control S3 storage costs.
+
+    - Datalake bucket: expire noncurrent (old) versions after 30 days and
+      abort stale multipart uploads after 7 days.
+    - Athena results bucket: expire query-result objects after 7 days so they
+      don't accumulate indefinitely.
+    """
+    log.info("Applying S3 lifecycle policy: %s", bucket_name)
+    if dry_run:
+        return True
+
+    if bucket_name == RESULTS_BUCKET:
+        # Athena result files are transient — wipe them after 7 days
+        rules = [
+            {
+                "ID": "expire-query-results",
+                "Status": "Enabled",
+                "Filter": {"Prefix": ""},
+                "Expiration": {"Days": 7},
+                "NoncurrentVersionExpiration": {"NoncurrentDays": 7},
+                "AbortIncompleteMultipartUpload": {"DaysAfterInitiation": 1},
+            }
+        ]
+    else:
+        # Datalake: keep current objects indefinitely, but clean up old
+        # versions (created by overwrites) after 30 days
+        rules = [
+            {
+                "ID": "expire-noncurrent-versions",
+                "Status": "Enabled",
+                "Filter": {"Prefix": ""},
+                "NoncurrentVersionExpiration": {"NoncurrentDays": 30},
+                "AbortIncompleteMultipartUpload": {"DaysAfterInitiation": 7},
+            }
+        ]
+
+    try:
+        s3_client.put_bucket_lifecycle_configuration(
+            Bucket=bucket_name,
+            LifecycleConfiguration={"Rules": rules},
+        )
+        log.info("S3 lifecycle policy applied: %s", bucket_name)
+        return True
+    except ClientError as e:
+        log.error("Failed to apply S3 lifecycle policy for %s: %s", bucket_name, e)
+        return False
+
+
 def create_s3_folders(s3_client, bucket_name: str, dry_run: bool):
     log.info("Creating S3 folder structure...")
     for folder in S3_FOLDERS:
@@ -294,11 +347,12 @@ def create_dynamodb_table(ddb_client, table_config: dict, dry_run: bool) -> bool
         waiter.wait(TableName=table_name)
         log.info("DynamoDB table active: %s", table_name)
 
-        # Enable TTL for pipeline-runs table
-        if table_name == "ss360-pipeline-runs":
+        # Enable TTL on any table that declares a TTLAttribute
+        ttl_attr = table_config.get("TTLAttribute")
+        if ttl_attr:
             ddb_client.update_time_to_live(
                 TableName=table_name,
-                TimeToLiveSpecification={"Enabled": True, "AttributeName": "ttl"},
+                TimeToLiveSpecification={"Enabled": True, "AttributeName": ttl_attr},
             )
         return True
     except ClientError as e:
@@ -459,6 +513,8 @@ def main():
     log.info("=== S3 SETUP ===")
     results["datalake_bucket"] = create_s3_bucket(s3, BUCKET_NAME, args.region, args.dry_run)
     results["results_bucket"] = create_s3_bucket(s3, RESULTS_BUCKET, args.region, args.dry_run)
+    results["datalake_lifecycle"] = apply_s3_lifecycle(s3, BUCKET_NAME, args.dry_run)
+    results["results_lifecycle"] = apply_s3_lifecycle(s3, RESULTS_BUCKET, args.dry_run)
     if results["datalake_bucket"]:
         create_s3_folders(s3, BUCKET_NAME, args.dry_run)
 
