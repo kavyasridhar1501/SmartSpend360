@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     cors_origins: List[str] = [
         "http://localhost:3000",
         "http://localhost:5173",
-        "https://smartspend360.vercel.app",
+        "https://smartspend360-app-pink.vercel.app",
     ]
 
     @field_validator("cors_origins", mode="before")
