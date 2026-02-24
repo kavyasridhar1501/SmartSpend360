@@ -18,7 +18,4 @@ COPY . .
 # Expose port (Railway uses $PORT env var)
 EXPOSE 8000
 
-# Copy and use shell script so $PORT always expands correctly
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
-CMD ["/start.sh"]
+CMD ["python", "run.py"]
