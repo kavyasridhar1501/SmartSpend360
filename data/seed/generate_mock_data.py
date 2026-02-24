@@ -18,6 +18,7 @@ import pickle
 import random
 import uuid
 from datetime import datetime, timedelta
+from decimal import Decimal
 from io import BytesIO
 from pathlib import Path
 
@@ -460,18 +461,29 @@ def upload_to_s3(s3_client, bucket: str, transactions: list, forecast: dict):
     log.info("S3 upload complete")
 
 
+def _to_decimal(obj):
+    """Recursively convert floats to Decimal for DynamoDB compatibility."""
+    if isinstance(obj, float):
+        return Decimal(str(obj))
+    if isinstance(obj, dict):
+        return {k: _to_decimal(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_to_decimal(v) for v in obj]
+    return obj
+
+
 def upload_to_dynamodb(ddb_resource, transactions: list, forecast: dict, metrics: dict):
     now = datetime.utcnow()
 
     # ---- Metrics ----
     table = ddb_resource.Table("ss360-metrics")
-    table.put_item(Item=metrics)
+    table.put_item(Item=_to_decimal(metrics))
     log.info("Metrics saved to DynamoDB")
 
     # ---- Forecast ----
     table = ddb_resource.Table("ss360-forecasts")
     table.put_item(
-        Item={
+        Item=_to_decimal({
             "userId": USER_ID,
             "forecastDate": metrics["date"],
             "runwayDays": forecast["runway_days"],
@@ -481,7 +493,7 @@ def upload_to_dynamodb(ddb_resource, transactions: list, forecast: dict, metrics
             "forecastS3Key": f"gold/forecasts/{metrics['date']}.json",
             "timestamp": now.isoformat(),
             "forecastJson": json.dumps(forecast["forecast"]),
-        }
+        })
     )
     log.info("Forecast saved to DynamoDB")
 
