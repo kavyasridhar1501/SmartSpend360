@@ -3,13 +3,27 @@
 import json
 import os
 from functools import lru_cache
-from typing import List
+from typing import Any, List
 
 from pydantic import field_validator
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+def _permissive_json_loads(v: str) -> Any:
+    """Try JSON parse; on failure return raw string so field_validator can handle it."""
+    try:
+        return json.loads(v)
+    except (json.JSONDecodeError, ValueError):
+        return v
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+        json_loads=_permissive_json_loads,
+    )
+
     # App
     app_name: str = "SmartSpend360"
     app_version: str = "1.0.0"
@@ -32,10 +46,13 @@ class Settings(BaseSettings):
     @classmethod
     def parse_cors_origins(cls, v: object) -> object:
         if isinstance(v, str):
-            try:
-                return json.loads(v)
-            except (json.JSONDecodeError, ValueError):
-                return [origin.strip() for origin in v.split(",") if origin.strip()]
+            v = v.strip()
+            if v.startswith("["):
+                try:
+                    return json.loads(v)
+                except (json.JSONDecodeError, ValueError):
+                    pass
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
         return v
 
     # AWS
@@ -70,10 +87,6 @@ class Settings(BaseSettings):
 
     # Server
     port: int = int(os.getenv("PORT", "8000"))
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
 
 
 @lru_cache
