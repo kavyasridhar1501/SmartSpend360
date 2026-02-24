@@ -22,11 +22,11 @@ const STAGE_DESCRIPTIONS = [
 
 function StatusIcon({ status }: { status: string }) {
   switch (status) {
-    case 'success': return <CheckCircle2 className="w-5 h-5 text-green-400" />
-    case 'running': return <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
+    case 'success': return <CheckCircle2 className="w-5 h-5 text-green-600" />
+    case 'running': return <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
     case 'failed':
-    case 'error': return <XCircle className="w-5 h-5 text-red-400" />
-    default: return <Circle className="w-5 h-5 text-slate-500" />
+    case 'error': return <XCircle className="w-5 h-5 text-red-600" />
+    default: return <Circle className="w-5 h-5 text-slate-400" />
   }
 }
 
@@ -36,10 +36,10 @@ function PipelineStageCard({ stage, index }: { stage: PipelineStageStatus; index
   const [expanded, setExpanded] = useState(false)
 
   return (
-    <div className={`bg-slate-800 border rounded-xl p-4 transition-colors cursor-pointer ${
-      stage.status === 'failed' ? 'border-red-500/40' :
-      stage.status === 'success' ? 'border-slate-700 hover:border-teal-500/30' :
-      'border-slate-700'
+    <div className={`bg-white border rounded-xl p-4 transition-colors cursor-pointer shadow-sm ${
+      stage.status === 'failed' ? 'border-red-300' :
+      stage.status === 'success' ? 'border-slate-200 hover:border-teal-300' :
+      'border-slate-200'
     }`}
       onClick={() => setExpanded(!expanded)}
     >
@@ -49,35 +49,35 @@ function PipelineStageCard({ stage, index }: { stage: PipelineStageStatus; index
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-bold text-slate-500 w-5">{index + 1}.</span>
-            <Icon className="w-4 h-4 text-slate-400" />
-            <span className="font-semibold text-sm text-slate-200">{stage.stage}</span>
+            <span className="text-xs font-bold text-slate-400 w-5">{index + 1}.</span>
+            <Icon className="w-4 h-4 text-slate-500" />
+            <span className="font-semibold text-sm text-slate-800">{stage.stage}</span>
             <StatusBadge status={stage.status} />
           </div>
-          <p className="text-xs text-slate-500 mt-1 ml-7 line-clamp-2">{desc}</p>
+          <p className="text-xs text-slate-400 mt-1 ml-7 line-clamp-2">{desc}</p>
           {expanded && (
             <div className="mt-3 ml-7 grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div>
-                <div className="text-xs text-slate-500 mb-0.5">Last Run</div>
-                <div className="text-xs text-slate-300 font-mono">
+                <div className="text-xs text-slate-400 mb-0.5">Last Run</div>
+                <div className="text-xs text-slate-600 font-mono">
                   {stage.last_run_time ? formatDate(stage.last_run_time) : '—'}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-slate-500 mb-0.5">Records</div>
-                <div className="text-xs text-slate-300 font-mono">
+                <div className="text-xs text-slate-400 mb-0.5">Records</div>
+                <div className="text-xs text-slate-600 font-mono">
                   {stage.records_processed?.toLocaleString() || '—'}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-slate-500 mb-0.5">Duration</div>
-                <div className="text-xs text-slate-300 font-mono">
+                <div className="text-xs text-slate-400 mb-0.5">Duration</div>
+                <div className="text-xs text-slate-600 font-mono">
                   {stage.duration_seconds ? `${stage.duration_seconds}s` : '—'}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-slate-500 mb-0.5">Errors</div>
-                <div className={`text-xs font-mono ${stage.error_count > 0 ? 'text-red-400' : 'text-slate-300'}`}>
+                <div className="text-xs text-slate-400 mb-0.5">Errors</div>
+                <div className={`text-xs font-mono ${stage.error_count > 0 ? 'text-red-600' : 'text-slate-600'}`}>
                   {stage.error_count}
                 </div>
               </div>
@@ -91,24 +91,24 @@ function PipelineStageCard({ stage, index }: { stage: PipelineStageStatus; index
 
 function PipelineDiagram({ stages }: { stages: PipelineStageStatus[] }) {
   return (
-    <div className="bg-slate-800 border border-slate-700 rounded-xl p-5">
-      <h3 className="text-sm font-semibold text-slate-200 mb-4">Pipeline Architecture</h3>
+    <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+      <h3 className="text-sm font-semibold text-slate-700 mb-4">Pipeline Architecture</h3>
       <div className="flex items-center gap-2 overflow-x-auto pb-2">
         {stages.map((stage, i) => (
           <div key={i} className="flex items-center gap-2 flex-shrink-0">
             <div className={`flex flex-col items-center p-3 rounded-xl border min-w-[90px] ${
-              stage.status === 'success' ? 'border-green-500/30 bg-green-500/5' :
-              stage.status === 'failed' ? 'border-red-500/30 bg-red-500/5' :
-              stage.status === 'running' ? 'border-blue-500/30 bg-blue-500/5' :
-              'border-slate-600 bg-slate-700/30'
+              stage.status === 'success' ? 'border-green-200 bg-green-50' :
+              stage.status === 'failed' ? 'border-red-200 bg-red-50' :
+              stage.status === 'running' ? 'border-blue-200 bg-blue-50' :
+              'border-slate-200 bg-slate-50'
             }`}>
               <StatusIcon status={stage.status} />
-              <span className="text-xs text-slate-400 mt-1.5 text-center leading-tight">
+              <span className="text-xs text-slate-500 mt-1.5 text-center leading-tight">
                 {i + 1}. {stage.stage.split(' ')[0]}
               </span>
             </div>
             {i < stages.length - 1 && (
-              <ArrowRight className="w-4 h-4 text-slate-600 flex-shrink-0" />
+              <ArrowRight className="w-4 h-4 text-slate-400 flex-shrink-0" />
             )}
           </div>
         ))}
@@ -134,15 +134,15 @@ export default function Pipeline() {
     <div className="p-4 lg:p-6 max-w-4xl mx-auto space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">Pipeline Status</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-slate-900">Pipeline Status</h1>
+          <p className="text-slate-500 text-sm mt-1">
             7-stage data pipeline — auto-refreshes every 30s
           </p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={() => refetch()}
-            className="flex items-center gap-1.5 px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg text-sm transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-lg text-sm transition-colors shadow-sm"
           >
             <RefreshCw className="w-4 h-4" />
           </button>
@@ -158,28 +158,28 @@ export default function Pipeline() {
       </div>
 
       {triggered && (
-        <div className="p-3 bg-teal-500/10 border border-teal-500/30 rounded-lg text-sm text-teal-300">
+        <div className="p-3 bg-teal-50 border border-teal-200 rounded-lg text-sm text-teal-700">
           Pipeline triggered! Run ID: {trigger.data?.dag_run_id}. Stages will update shortly.
         </div>
       )}
 
       {/* Overall status */}
       {data && (
-        <div className="flex items-center gap-4 p-4 bg-slate-800 border border-slate-700 rounded-xl">
+        <div className="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
           <div className="flex items-center gap-2">
             <div className={`w-3 h-3 rounded-full ${
-              data.overall_status === 'success' ? 'bg-green-400 animate-pulse-slow' :
-              data.overall_status === 'partial' ? 'bg-yellow-400' :
-              'bg-slate-500'
+              data.overall_status === 'success' ? 'bg-green-500 animate-pulse-slow' :
+              data.overall_status === 'partial' ? 'bg-yellow-500' :
+              'bg-slate-400'
             }`} />
-            <span className="text-sm font-semibold text-slate-200">
+            <span className="text-sm font-semibold text-slate-800">
               {data.overall_status === 'success' ? 'All systems operational' :
                data.overall_status === 'partial' ? 'Partial degradation' :
                'Unknown status'}
             </span>
           </div>
           {data.last_full_run && (
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-slate-400">
               Last full run: {formatDate(data.last_full_run)}
             </span>
           )}
@@ -191,7 +191,7 @@ export default function Pipeline() {
 
       {/* Stage list */}
       <div>
-        <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Stage Details</h2>
+        <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Stage Details</h2>
         {isLoading ? (
           <div className="space-y-3">
             {[...Array(7)].map((_, i) => <Skeleton key={i} className="h-16 rounded-xl" />)}

@@ -16,7 +16,7 @@ function ForecastChart({ data }: { data: ReturnType<typeof useForecast>['data'] 
 
   const chartData = data.forecast.map((p: ForecastPoint) => ({
     ...p,
-    ds_label: p.ds.slice(5), // MM-DD
+    ds_label: p.ds.slice(5),
     historical_yhat: !p.is_future ? p.yhat : undefined,
     forecast_yhat: p.is_future ? p.yhat : undefined,
     band_80_lower: p.yhat_lower,
@@ -30,42 +30,42 @@ function ForecastChart({ data }: { data: ReturnType<typeof useForecast>['data'] 
       <ComposedChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
         <defs>
           <linearGradient id="band95" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.08} />
-            <stop offset="95%" stopColor="#14b8a6" stopOpacity={0.02} />
+            <stop offset="5%" stopColor="#0d9488" stopOpacity={0.1} />
+            <stop offset="95%" stopColor="#0d9488" stopOpacity={0.02} />
           </linearGradient>
           <linearGradient id="band80" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.18} />
-            <stop offset="95%" stopColor="#14b8a6" stopOpacity={0.06} />
+            <stop offset="5%" stopColor="#0d9488" stopOpacity={0.2} />
+            <stop offset="95%" stopColor="#0d9488" stopOpacity={0.06} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-        <XAxis dataKey="ds_label" tick={{ fill: '#94a3b8', fontSize: 10 }} tickLine={false}
+        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+        <XAxis dataKey="ds_label" tick={{ fill: '#64748b', fontSize: 10 }} tickLine={false}
           interval="preserveStartEnd" />
-        <YAxis tick={{ fill: '#94a3b8', fontSize: 10 }} tickLine={false} axisLine={false}
+        <YAxis tick={{ fill: '#64748b', fontSize: 10 }} tickLine={false} axisLine={false}
           tickFormatter={(v) => `$${v}`} />
         <Tooltip
-          contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8 }}
+          contentStyle={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 8 }}
           formatter={(v: number, name: string) => [
             typeof v === 'number' ? formatCurrency(v) : v,
             name,
           ]}
         />
-        <Legend formatter={(v) => <span style={{ color: '#94a3b8', fontSize: 11 }}>{v}</span>} />
+        <Legend formatter={(v) => <span style={{ color: '#64748b', fontSize: 11 }}>{v}</span>} />
 
         {/* 95% band */}
         <Area type="monotone" dataKey="band_95_upper" stroke="none" fill="url(#band95)" name="95% CI upper" legendType="none" />
-        <Area type="monotone" dataKey="band_95_lower" stroke="none" fill="#0f172a" name="95% CI lower" legendType="none" />
+        <Area type="monotone" dataKey="band_95_lower" stroke="none" fill="#f8fafc" name="95% CI lower" legendType="none" />
 
         {/* 80% band */}
         <Area type="monotone" dataKey="band_80_upper" stroke="none" fill="url(#band80)" name="80% CI" />
-        <Area type="monotone" dataKey="band_80_lower" stroke="none" fill="#0f172a" legendType="none" />
+        <Area type="monotone" dataKey="band_80_lower" stroke="none" fill="#f8fafc" legendType="none" />
 
         {/* Historical line */}
-        <Line type="monotone" dataKey="historical_yhat" stroke="#14b8a6" strokeWidth={2}
+        <Line type="monotone" dataKey="historical_yhat" stroke="#0d9488" strokeWidth={2}
           dot={false} name="Historical" connectNulls={false} />
 
         {/* Forecast line */}
-        <Line type="monotone" dataKey="forecast_yhat" stroke="#14b8a6" strokeWidth={2}
+        <Line type="monotone" dataKey="forecast_yhat" stroke="#0d9488" strokeWidth={2}
           strokeDasharray="6 3" dot={false} name="Forecast" connectNulls={false} />
 
         {/* Today marker */}
@@ -88,53 +88,53 @@ function WhatIfSimulator({ baseRunway, baseSpend }: { baseRunway: number; baseSp
   const projectedSavings = (dailyIncome - dailySpend) * 30
 
   return (
-    <div className="bg-slate-800 border border-slate-700 rounded-xl p-5">
+    <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
       <div className="flex items-center gap-2 mb-4">
-        <Sliders className="w-4 h-4 text-teal-400" />
-        <h3 className="text-sm font-semibold text-slate-200">What-If Simulator</h3>
+        <Sliders className="w-4 h-4 text-teal-600" />
+        <h3 className="text-sm font-semibold text-slate-700">What-If Simulator</h3>
       </div>
 
       <div className="space-y-5">
         <div>
           <div className="flex justify-between text-sm mb-2">
-            <label className="text-slate-300">Monthly Income Assumption</label>
-            <span className="font-mono text-teal-400">{formatCurrency(income)}</span>
+            <label className="text-slate-600">Monthly Income Assumption</label>
+            <span className="font-mono text-teal-600">{formatCurrency(income)}</span>
           </div>
           <input
             type="range" min={0} max={20000} step={500} value={income}
             onChange={(e) => setIncome(+e.target.value)}
-            className="w-full accent-teal-500"
+            className="w-full accent-teal-600"
           />
-          <div className="flex justify-between text-xs text-slate-500 mt-1">
+          <div className="flex justify-between text-xs text-slate-400 mt-1">
             <span>$0</span><span>$20,000</span>
           </div>
         </div>
 
         <div>
           <div className="flex justify-between text-sm mb-2">
-            <label className="text-slate-300">Discretionary Spend Reduction</label>
-            <span className="font-mono text-teal-400">{reduction}%</span>
+            <label className="text-slate-600">Discretionary Spend Reduction</label>
+            <span className="font-mono text-teal-600">{reduction}%</span>
           </div>
           <input
             type="range" min={0} max={50} step={5} value={reduction}
             onChange={(e) => setReduction(+e.target.value)}
-            className="w-full accent-teal-500"
+            className="w-full accent-teal-600"
           />
-          <div className="flex justify-between text-xs text-slate-500 mt-1">
+          <div className="flex justify-between text-xs text-slate-400 mt-1">
             <span>0%</span><span>50%</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-700">
-          <div className="text-center p-3 bg-slate-700/40 rounded-lg">
-            <div className="text-xs text-slate-400 mb-1">Adjusted Runway</div>
-            <div className={`text-xl font-bold ${runway === Infinity ? 'text-green-400' : runway > 30 ? 'text-teal-400' : 'text-red-400'}`}>
+        <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-200">
+          <div className="text-center p-3 bg-slate-50 rounded-lg border border-slate-100">
+            <div className="text-xs text-slate-500 mb-1">Adjusted Runway</div>
+            <div className={`text-xl font-bold ${runway === Infinity ? 'text-green-600' : runway > 30 ? 'text-teal-600' : 'text-red-600'}`}>
               {runway === Infinity ? '∞' : `${Math.round(runway)}d`}
             </div>
           </div>
-          <div className="text-center p-3 bg-slate-700/40 rounded-lg">
-            <div className="text-xs text-slate-400 mb-1">Projected Savings</div>
-            <div className={`text-xl font-bold ${projectedSavings >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+          <div className="text-center p-3 bg-slate-50 rounded-lg border border-slate-100">
+            <div className="text-xs text-slate-500 mb-1">Projected Savings</div>
+            <div className={`text-xl font-bold ${projectedSavings >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {projectedSavings >= 0 ? '+' : ''}{formatCurrency(projectedSavings, true)}
             </div>
           </div>
@@ -159,19 +159,19 @@ export default function Forecast() {
       title: 'Projected 30-Day Spend',
       value: data ? formatCurrency(data.projected_30d_spend) : '—',
       icon: DollarSign,
-      color: 'text-teal-400',
+      color: 'text-teal-600',
     },
     {
       title: 'Estimated Runway',
       value: data ? `${data.runway_days} days` : '—',
       icon: Clock,
-      color: data?.runway_days && data.runway_days < 30 ? 'text-red-400' : 'text-green-400',
+      color: data?.runway_days && data.runway_days < 30 ? 'text-red-600' : 'text-green-600',
     },
     {
       title: 'Mean Daily Spend',
       value: data ? formatCurrency(data.mean_daily_spend) : '—',
       icon: TrendingUp,
-      color: 'text-slate-300',
+      color: 'text-slate-700',
     },
     {
       title: 'Health Score',
@@ -185,13 +185,13 @@ export default function Forecast() {
     <div className="p-4 lg:p-6 max-w-6xl mx-auto space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">Cash Flow Forecast</h1>
-          <p className="text-slate-400 text-sm mt-1">Prophet ML model — 90-day training, {horizon}-day horizon</p>
+          <h1 className="text-2xl font-bold text-slate-900">Cash Flow Forecast</h1>
+          <p className="text-slate-500 text-sm mt-1">Prophet ML model — 90-day training, {horizon}-day horizon</p>
         </div>
         <select
           value={horizon}
           onChange={(e) => setHorizon(+e.target.value)}
-          className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-teal-500"
+          className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:border-teal-500 shadow-sm"
         >
           <option value={7}>7 days</option>
           <option value={14}>14 days</option>
@@ -204,10 +204,10 @@ export default function Forecast() {
       {/* Summary cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {summaryCards.map(({ title, value, icon: Icon, color }) => (
-          <div key={title} className="bg-slate-800 border border-slate-700 rounded-xl p-4">
+          <div key={title} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
             <div className="flex items-center gap-2 mb-2">
               <Icon className={`w-4 h-4 ${color}`} />
-              <span className="text-xs text-slate-400">{title}</span>
+              <span className="text-xs text-slate-500">{title}</span>
             </div>
             <div className={`text-xl font-bold ${color}`}>{value}</div>
           </div>
@@ -215,10 +215,10 @@ export default function Forecast() {
       </div>
 
       {/* Forecast chart */}
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-5">
-        <h3 className="text-sm font-semibold text-slate-200 mb-4">
+      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <h3 className="text-sm font-semibold text-slate-700 mb-4">
           Forecast Chart
-          <span className="ml-2 text-xs font-normal text-slate-500">
+          <span className="ml-2 text-xs font-normal text-slate-400">
             Solid = historical · Dashed = forecast · Shaded = 80%/95% confidence
           </span>
         </h3>
