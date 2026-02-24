@@ -22,8 +22,4 @@
       ]
     }
   ],
-  "env": {
-    "VITE_API_URL": "@smartspend360-api-url",
-    "VITE_API_KEY": "@smartspend360-api-key"
-  }
 }
