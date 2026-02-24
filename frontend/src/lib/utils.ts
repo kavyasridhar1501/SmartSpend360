@@ -48,31 +48,31 @@ export function formatTime(isoStr: string): string {
 export function severityColor(severity: string): string {
   switch (severity) {
     case 'HIGH':
-      return 'text-red-400 bg-red-400/10 border-red-400/30'
+      return 'text-red-700 bg-red-50 border-red-200'
     case 'MEDIUM':
-      return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/30'
+      return 'text-yellow-700 bg-yellow-50 border-yellow-200'
     default:
-      return 'text-slate-400 bg-slate-400/10 border-slate-400/30'
+      return 'text-slate-600 bg-slate-100 border-slate-200'
   }
 }
 
 export function healthScoreColor(score: number): string {
-  if (score >= 70) return 'text-green-400'
-  if (score >= 40) return 'text-yellow-400'
-  return 'text-red-400'
+  if (score >= 70) return 'text-green-600'
+  if (score >= 40) return 'text-yellow-700'
+  return 'text-red-600'
 }
 
 export function statusColor(status: string): string {
   switch (status?.toLowerCase()) {
     case 'success':
-      return 'text-green-400'
+      return 'text-green-600'
     case 'running':
-      return 'text-blue-400'
+      return 'text-blue-600'
     case 'failed':
     case 'error':
-      return 'text-red-400'
+      return 'text-red-600'
     default:
-      return 'text-slate-400'
+      return 'text-slate-500'
   }
 }
 

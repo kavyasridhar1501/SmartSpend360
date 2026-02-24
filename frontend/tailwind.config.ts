@@ -6,16 +6,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: '#0f172a',
-        surface: '#1e293b',
-        'surface-2': '#334155',
-        border: '#334155',
+        background: '#f8fafc',
+        surface: '#ffffff',
+        'surface-2': '#f1f5f9',
+        border: '#e2e8f0',
         teal: {
           400: '#2dd4bf',
           500: '#14b8a6',
           600: '#0d9488',
         },
-        accent: '#14b8a6',
+        accent: '#0d9488',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

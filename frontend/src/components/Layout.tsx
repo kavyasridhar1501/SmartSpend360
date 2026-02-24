@@ -33,12 +33,12 @@ function PipelineStatusDot() {
       <div
         className={cn(
           'w-2 h-2 rounded-full',
-          status === 'success' ? 'bg-green-400 animate-pulse-slow' :
-          status === 'partial' ? 'bg-yellow-400' :
-          'bg-slate-500',
+          status === 'success' ? 'bg-green-500 animate-pulse-slow' :
+          status === 'partial' ? 'bg-yellow-500' :
+          'bg-slate-400',
         )}
       />
-      <span className="text-xs text-slate-400">
+      <span className="text-xs text-slate-500">
         {status === 'success' ? 'Live' : status === 'partial' ? 'Partial' : 'Stale'}
       </span>
     </div>
@@ -53,11 +53,11 @@ export default function Layout() {
   const now = new Date()
 
   return (
-    <div className="flex h-screen bg-slate-900 overflow-hidden">
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/30 z-40 lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -65,19 +65,19 @@ export default function Layout() {
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed lg:static inset-y-0 left-0 z-50 flex flex-col bg-slate-800 border-r border-slate-700 transition-all duration-300',
+          'fixed lg:static inset-y-0 left-0 z-50 flex flex-col bg-white border-r border-slate-200 transition-all duration-300',
           collapsed ? 'w-16' : 'w-60',
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
         )}
       >
         {/* Logo */}
-        <div className="flex items-center h-16 px-4 border-b border-slate-700 flex-shrink-0">
+        <div className="flex items-center h-16 px-4 border-b border-slate-200 flex-shrink-0">
           <div className="flex items-center gap-2.5 overflow-hidden">
-            <div className="p-1.5 bg-teal-500/20 rounded-lg flex-shrink-0">
-              <Zap className="w-5 h-5 text-teal-400" />
+            <div className="p-1.5 bg-teal-50 rounded-lg flex-shrink-0">
+              <Zap className="w-5 h-5 text-teal-600" />
             </div>
             {!collapsed && (
-              <span className="font-bold text-sm text-slate-100 whitespace-nowrap">
+              <span className="font-bold text-sm text-slate-900 whitespace-nowrap">
                 SmartSpend360
               </span>
             )}
@@ -95,8 +95,8 @@ export default function Layout() {
                 cn(
                   'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all',
                   isActive
-                    ? 'bg-teal-500/15 text-teal-400 border border-teal-500/20'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50',
+                    ? 'bg-teal-50 text-teal-700 border border-teal-200'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100',
                   collapsed && 'justify-center',
                 )
               }
@@ -108,10 +108,10 @@ export default function Layout() {
         </nav>
 
         {/* Collapse toggle (desktop) */}
-        <div className="hidden lg:flex items-center justify-end px-3 py-3 border-t border-slate-700">
+        <div className="hidden lg:flex items-center justify-end px-3 py-3 border-t border-slate-200">
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-slate-700"
+            className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100"
           >
             {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
@@ -121,9 +121,9 @@ export default function Layout() {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top bar */}
-        <header className="flex items-center justify-between h-16 px-4 lg:px-6 bg-slate-800/50 border-b border-slate-700 flex-shrink-0">
+        <header className="flex items-center justify-between h-16 px-4 lg:px-6 bg-white border-b border-slate-200 flex-shrink-0">
           <button
-            className="lg:hidden p-2 text-slate-400 hover:text-slate-200"
+            className="lg:hidden p-2 text-slate-500 hover:text-slate-800"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -131,16 +131,16 @@ export default function Layout() {
 
           <div className="flex items-center gap-4 ml-auto">
             <PipelineStatusDot />
-            <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-500">
+            <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-400">
               <span>Updated:</span>
-              <span className="text-slate-400">
+              <span className="text-slate-500">
                 {now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
               </span>
             </div>
             {health && (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-700/50 rounded-full">
-                <div className={cn('w-1.5 h-1.5 rounded-full', health.aws_connected ? 'bg-green-400' : 'bg-slate-500')} />
-                <span className="text-xs text-slate-400">v{health.version}</span>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 rounded-full">
+                <div className={cn('w-1.5 h-1.5 rounded-full', health.aws_connected ? 'bg-green-500' : 'bg-slate-400')} />
+                <span className="text-xs text-slate-500">v{health.version}</span>
               </div>
             )}
           </div>
