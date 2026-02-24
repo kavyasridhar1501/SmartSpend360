@@ -18,5 +18,7 @@ COPY . .
 # Expose port (Railway uses $PORT env var)
 EXPOSE 8000
 
-# Start uvicorn
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 2
+# Copy and use shell script so $PORT always expands correctly
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+CMD ["/start.sh"]
