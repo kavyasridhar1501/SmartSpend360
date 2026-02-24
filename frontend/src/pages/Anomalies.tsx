@@ -115,7 +115,7 @@ export default function Anomalies() {
 
   // Group by date
   const grouped: Record<string, AnomalyRecord[]> = {}
-  data?.anomalies?.forEach((a) => {
+  data?.anomalies?.forEach((a: AnomalyRecord) => {
     grouped[a.date] = grouped[a.date] || []
     grouped[a.date].push(a)
   })

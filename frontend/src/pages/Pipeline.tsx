@@ -198,7 +198,7 @@ export default function Pipeline() {
           </div>
         ) : (
           <div className="space-y-3">
-            {stages.map((stage, i) => (
+            {stages.map((stage: PipelineStageStatus, i: number) => (
               <PipelineStageCard key={i} stage={stage} index={i} />
             ))}
           </div>

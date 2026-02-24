@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Bell, Plus, Mail, Monitor, Toggle, Trash2, Clock } from 'lucide-react'
+import { Bell, Plus, Mail, Monitor, Trash2, Clock } from 'lucide-react'
 import { useAlerts, useCreateAlert } from '@/hooks/useQueries'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { ErrorState } from '@/components/ui/ErrorState'
@@ -224,7 +224,7 @@ export default function Alerts() {
             </h2>
             {data?.alerts?.length ? (
               <div className="space-y-3">
-                {data.alerts.map((a) => <AlertCard key={a.alert_id} alert={a} />)}
+                {data.alerts.map((a: AlertRecord) => <AlertCard key={a.alert_id} alert={a} />)}
               </div>
             ) : (
               <div className="text-center py-10 text-slate-500">
@@ -253,7 +253,7 @@ export default function Alerts() {
                       </tr>
                     </thead>
                     <tbody>
-                      {data.recent_events.slice(0, 20).map((e, i) => (
+                      {data.recent_events.slice(0, 20).map((e: AlertEvent, i: number) => (
                         <AlertEventRow key={i} event={e} />
                       ))}
                     </tbody>

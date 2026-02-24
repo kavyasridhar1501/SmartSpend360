@@ -8,12 +8,13 @@ import { useForecast } from '@/hooks/useQueries'
 import { ChartSkeleton } from '@/components/ui/Skeleton'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { formatCurrency, formatDate, healthScoreColor } from '@/lib/utils'
+import type { ForecastPoint } from '@/types'
 
 function ForecastChart({ data }: { data: ReturnType<typeof useForecast>['data'] }) {
   if (!data) return <ChartSkeleton height="h-80" />
   const today = new Date().toISOString().split('T')[0]
 
-  const chartData = data.forecast.map((p) => ({
+  const chartData = data.forecast.map((p: ForecastPoint) => ({
     ...p,
     ds_label: p.ds.slice(5), // MM-DD
     historical_yhat: !p.is_future ? p.yhat : undefined,

@@ -11,6 +11,7 @@ import { KPICardSkeleton, ChartSkeleton } from '@/components/ui/Skeleton'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { SeverityBadge, StatusBadge } from '@/components/ui/Badge'
 import { formatCurrency, formatDate, healthScoreColor, CATEGORY_COLORS } from '@/lib/utils'
+import type { Transaction, CategorySummary, AnomalyRecord } from '@/types'
 
 function SpendChart() {
   const { data, isLoading } = useTransactions({ page_size: 200 })
@@ -19,7 +20,7 @@ function SpendChart() {
 
   // Build daily spend from transactions
   const dailyMap: Record<string, number> = {}
-  data?.transactions?.forEach((t) => {
+  data?.transactions?.forEach((t: Transaction) => {
     if (t.is_debit) {
       dailyMap[t.date] = (dailyMap[t.date] || 0) + t.amount_abs
     }
@@ -68,7 +69,7 @@ function CategoryDonut() {
   const categories = data?.top_categories || []
   if (!categories.length) return <ChartSkeleton height="h-48" />
 
-  const pieData = categories.slice(0, 6).map((c) => ({
+  const pieData = categories.slice(0, 6).map((c: CategorySummary) => ({
     name: c.category,
     value: c.amount_abs,
   }))
@@ -85,7 +86,7 @@ function CategoryDonut() {
           paddingAngle={2}
           dataKey="value"
         >
-          {pieData.map((entry) => (
+          {pieData.map((entry: { name: string; value: number }) => (
             <Cell key={entry.name} fill={CATEGORY_COLORS[entry.name] || '#64748b'} />
           ))}
         </Pie>
@@ -108,7 +109,7 @@ function WeeklyBarChart() {
   if (!data) return <ChartSkeleton height="h-40" />
 
   const weeklyMap: Record<number, number> = {}
-  data.transactions?.forEach((t) => {
+  data.transactions?.forEach((t: Transaction) => {
     if (!t.is_debit) return
     const weekAgo = Math.floor(
       (Date.now() - new Date(t.date).getTime()) / (7 * 86400 * 1000)
@@ -146,7 +147,7 @@ function PipelineWidget() {
 
   return (
     <div className="flex flex-wrap gap-3">
-      {stages.map((stage, i) => (
+      {stages.map((stage: { status: string }, i: number) => (
         <div key={i} className="flex items-center gap-2">
           {i > 0 && <div className="w-6 h-px bg-slate-600 hidden sm:block" />}
           <div className="flex flex-col items-center gap-1">
@@ -240,7 +241,7 @@ export default function Dashboard() {
             <span className="text-xs text-slate-500">{anomalies?.total_count || 0} total</span>
           </div>
           <div className="space-y-3">
-            {anomalies?.anomalies?.slice(0, 3).map((a) => (
+            {anomalies?.anomalies?.slice(0, 3).map((a: AnomalyRecord) => (
               <div key={a.alert_id} className="flex items-start justify-between p-3 bg-slate-700/30 rounded-lg">
                 <div>
                   <div className="flex items-center gap-2">

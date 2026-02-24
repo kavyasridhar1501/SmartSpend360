@@ -109,7 +109,7 @@ export default function Transactions() {
     anomaly_only: anomalyOnly,
   })
 
-  const filtered = (data?.transactions || []).filter((t) =>
+  const filtered = (data?.transactions || []).filter((t: Transaction) =>
     !search || t.merchant_name.toLowerCase().includes(search.toLowerCase())
   )
 
@@ -199,7 +199,7 @@ export default function Transactions() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-700/50">
-                {filtered.map((txn) => (
+                {filtered.map((txn: Transaction) => (
                   <tr
                     key={txn.transaction_id}
                     className="hover:bg-slate-700/30 cursor-pointer transition-colors"
