@@ -1,9 +1,11 @@
 """SmartSpend360 — Application Configuration"""
 
+import json
 import os
 from functools import lru_cache
 from typing import List
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -25,6 +27,16 @@ class Settings(BaseSettings):
         "http://localhost:5173",
         "https://smartspend360.vercel.app",
     ]
+
+    @field_validator("cors_origins", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, v: object) -> object:
+        if isinstance(v, str):
+            try:
+                return json.loads(v)
+            except (json.JSONDecodeError, ValueError):
+                return [origin.strip() for origin in v.split(",") if origin.strip()]
+        return v
 
     # AWS
     aws_access_key_id: str = os.getenv("AWS_ACCESS_KEY_ID", "")
