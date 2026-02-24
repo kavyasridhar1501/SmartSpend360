@@ -1,0 +1,25 @@
+smartspend360:
+  target: dev
+  outputs:
+    dev:
+      type: athena
+      region_name: "{{ env_var('AWS_REGION', 'us-east-1') }}"
+      s3_staging_dir: "s3://{{ env_var('S3_RESULTS_BUCKET', 'smartspend360-athena-results') }}/dbt-staging/"
+      database: "{{ env_var('ATHENA_DATABASE', 'smartspend360_db') }}"
+      schema: smartspend360
+      work_group: "{{ env_var('ATHENA_WORKGROUP', 'smartspend360') }}"
+      aws_access_key_id: "{{ env_var('AWS_ACCESS_KEY_ID') }}"
+      aws_secret_access_key: "{{ env_var('AWS_SECRET_ACCESS_KEY') }}"
+      num_retries: 3
+      poll_interval: 5
+    prod:
+      type: athena
+      region_name: "{{ env_var('AWS_REGION', 'us-east-1') }}"
+      s3_staging_dir: "s3://{{ env_var('S3_RESULTS_BUCKET', 'smartspend360-athena-results') }}/dbt-staging/"
+      database: "{{ env_var('ATHENA_DATABASE', 'smartspend360_db') }}"
+      schema: smartspend360_prod
+      work_group: "{{ env_var('ATHENA_WORKGROUP', 'smartspend360') }}"
+      aws_access_key_id: "{{ env_var('AWS_ACCESS_KEY_ID') }}"
+      aws_secret_access_key: "{{ env_var('AWS_SECRET_ACCESS_KEY') }}"
+      num_retries: 5
+      poll_interval: 10

@@ -1,0 +1,38 @@
+name: smartspend360
+version: "1.0.0"
+config-version: 2
+
+profile: smartspend360
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+vars:
+  s3_bucket: "smartspend360-datalake"
+  athena_database: "smartspend360_db"
+  start_date: "2024-01-01"
+  user_id: "demo_user"
+
+models:
+  smartspend360:
+    staging:
+      +materialized: view
+      +schema: staging
+      +tags: ["staging"]
+    intermediate:
+      +materialized: table
+      +schema: intermediate
+      +tags: ["intermediate"]
+    marts:
+      +materialized: table
+      +schema: marts
+      +tags: ["marts"]

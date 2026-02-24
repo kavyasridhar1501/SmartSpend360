@@ -1,0 +1,114 @@
+version: 2
+
+sources:
+  - name: smartspend360_raw
+    database: smartspend360_db
+    description: "Raw data from S3 via Athena external tables"
+    tables:
+      - name: gold_transactions
+        description: "Cleaned and enriched transactions from Databricks gold layer"
+        columns:
+          - name: transaction_id
+            description: "Unique transaction identifier from Plaid"
+          - name: user_id
+            description: "User identifier"
+          - name: amount
+            description: "Transaction amount (positive = debit in Plaid convention)"
+          - name: date
+            description: "Transaction date YYYY-MM-DD"
+          - name: category
+            description: "SmartSpend360 category (Food/Transport/Entertainment/etc)"
+
+      - name: silver_market
+        description: "Daily ETF prices from Alpha Vantage"
+        columns:
+          - name: symbol
+            description: "Ticker symbol (SPY/QQQ/VTI)"
+          - name: date
+            description: "Trading date"
+          - name: close
+            description: "Closing price"
+
+      - name: silver_fx_rates
+        description: "Daily USD FX rates from Open Exchange Rates"
+        columns:
+          - name: date
+            description: "Rate date"
+          - name: base_currency
+            description: "Always USD"
+          - name: target_currency
+            description: "Target currency code"
+          - name: rate
+            description: "Exchange rate (1 USD = rate target_currency)"
+
+      - name: gold_anomalies
+        description: "Anomaly detection results from Isolation Forest"
+        columns:
+          - name: transaction_id
+            description: "Transaction identifier"
+          - name: anomaly_score
+            description: "Normalized anomaly score (-1 to 1, lower = more anomalous)"
+          - name: anomaly_severity
+            description: "Classification: HIGH, MEDIUM, or NORMAL"
+
+      - name: gold_forecasts
+        description: "Prophet cash flow forecast"
+        columns:
+          - name: ds
+            description: "Forecast date"
+          - name: yhat
+            description: "Predicted daily spend"
+          - name: is_future_forecast
+            description: "True if this is a future prediction (not historical)"
+
+models:
+  - name: stg_transactions
+    description: "Staged transactions with standardized types and null filtering"
+    columns:
+      - name: transaction_id
+        description: "Unique transaction ID"
+        tests:
+          - not_null
+          - unique
+      - name: user_id
+        description: "User identifier"
+        tests:
+          - not_null
+      - name: amount
+        description: "Transaction amount"
+        tests:
+          - not_null
+      - name: date
+        description: "Transaction date string"
+        tests:
+          - not_null
+      - name: category
+        description: "Mapped spending category"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["Food", "Transport", "Entertainment", "Healthcare", "Housing", "Income", "Transfer", "Other"]
+
+  - name: stg_market
+    description: "Staged market data with cleaned price fields"
+    columns:
+      - name: symbol
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["SPY", "QQQ", "VTI"]
+      - name: date
+        tests:
+          - not_null
+
+  - name: stg_fx_rates
+    description: "Staged FX rates deduplicated by date and currency pair"
+    columns:
+      - name: date
+        tests:
+          - not_null
+      - name: target_currency
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["EUR", "GBP", "CAD", "INR", "JPY", "AUD", "CHF", "MXN", "USD"]

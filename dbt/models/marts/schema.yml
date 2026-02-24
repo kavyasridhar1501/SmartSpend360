@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: mart_spend_summary
+    description: "Monthly spend summary with category breakdowns and MoM changes"
+    columns:
+      - name: user_id
+        tests:
+          - not_null
+      - name: year_month
+        description: "YYYY-MM format"
+        tests:
+          - not_null
+      - name: monthly_spend_usd
+        tests:
+          - not_null
+
+  - name: mart_anomalies
+    description: "Anomaly transactions with ML scores and human-readable explanations"
+    columns:
+      - name: transaction_id
+        tests:
+          - not_null
+          - unique
+      - name: anomaly_severity
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["HIGH", "MEDIUM"]
+      - name: anomaly_score
+        tests:
+          - not_null
+
+  - name: mart_forecast_accuracy
+    description: "Tracks Prophet model accuracy over time for MLOps monitoring"
+    columns:
+      - name: date
+        tests:
+          - not_null
+      - name: actual_spend
+        tests:
+          - not_null
+      - name: mape_pct
+        description: "Mean Absolute Percentage Error as percentage"
