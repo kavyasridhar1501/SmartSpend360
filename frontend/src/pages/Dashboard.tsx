@@ -1,15 +1,15 @@
 import {
   AreaChart, Area, BarChart, Bar, Cell, PieChart, Pie, Legend,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts'
 import {
-  DollarSign, ShieldAlert, Heart, Clock, AlertTriangle, CheckCircle2, XCircle, Loader2, Activity,
+  DollarSign, ShieldAlert, Heart, Clock, Activity,
 } from 'lucide-react'
 import { useMetricsSummary, useAnomalies, usePipelineStatus, useTransactions } from '@/hooks/useQueries'
 import { KPICard } from '@/components/ui/KPICard'
 import { KPICardSkeleton, ChartSkeleton } from '@/components/ui/Skeleton'
 import { ErrorState } from '@/components/ui/ErrorState'
-import { SeverityBadge, StatusBadge } from '@/components/ui/Badge'
+import { SeverityBadge } from '@/components/ui/Badge'
 import { formatCurrency, formatDate, healthScoreColor, CATEGORY_COLORS } from '@/lib/utils'
 import type { Transaction, CategorySummary, AnomalyRecord } from '@/types'
 
