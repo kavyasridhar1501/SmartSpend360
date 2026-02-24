@@ -2,6 +2,8 @@
 
 Production-grade financial analytics platform built on a fully free/open-source cloud stack. Zero-cost deployment using AWS Free Tier + Databricks Community Edition.
 
+**Live demo:** https://smartspend360-app-pink.vercel.app/dashboard
+
 ## Architecture
 
 ```
