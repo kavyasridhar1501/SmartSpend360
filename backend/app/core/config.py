@@ -3,25 +3,16 @@
 import json
 import os
 from functools import lru_cache
-from typing import Any, List
+from typing import Any, List, Optional
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-
-def _permissive_json_loads(v: str) -> Any:
-    """Try JSON parse; on failure return raw string so field_validator can handle it."""
-    try:
-        return json.loads(v)
-    except (json.JSONDecodeError, ValueError):
-        return v
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         case_sensitive=False,
-        json_loads=_permissive_json_loads,
     )
 
     # App
@@ -36,7 +27,10 @@ class Settings(BaseSettings):
     api_key_name: str = "X-API-Key"
 
     # CORS
-    cors_origins: List[str] = [
+    # Optional[List[str]] instead of List[str] so pydantic-settings sets
+    # allow_parse_failure=True for this field, letting the field_validator
+    # below handle both comma-separated strings and JSON arrays from env vars.
+    cors_origins: Optional[List[str]] = [
         "http://localhost:3000",
         "http://localhost:5173",
         "https://smartspend360-app-pink.vercel.app",
