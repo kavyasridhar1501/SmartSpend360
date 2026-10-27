@@ -143,6 +143,25 @@ pytest tests/ --cov=app --cov-report=term-missing -v
 5. Set cluster ID in `.env` as `DATABRICKS_CLUSTER_ID`
 6. Set notebook base path as `DATABRICKS_NOTEBOOK_BASE`
 
+## Model evaluation
+
+The anomaly model excludes recurring bills (Housing: rent, utilities) from its feature matrix. Those payments are scheduled, so they looked like spending spikes and caused most false positives. They are still included in spend totals (notebook 05, dbt, dashboard).
+
+Mean over 30 seeds of 90-day mock data, with days labelled anomalous when they contain an injected anomaly:
+
+| Model | Precision | Recall | F1 | ROC-AUC |
+|-------|-----------|--------|----|---------|
+| Isolation Forest, before (all debits, 16 features) | 0.49 | 0.27 | 0.34 | 0.85 |
+| Isolation Forest, after (Housing excluded, 15 features) | 0.89 | 0.49 | 0.63 | 0.90 |
+| Rule: max txn > mean + 2·std, all debits | 0.66 | 0.59 | 0.62 | 0.92 |
+| Rule: max txn > mean + 2·std, Housing excluded | 0.99 | 0.66 | 0.79 | 0.95 |
+
+Reproduce locally (needs only pandas, numpy and scikit-learn, no AWS or Spark):
+
+```bash
+python scripts/evaluate_anomaly_model.py
+```
+
 ## dbt Setup
 
 ```bash

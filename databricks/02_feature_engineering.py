@@ -29,7 +29,11 @@ gold_path = f"s3a://{S3_BUCKET}/gold/transactions/"
 df = spark.read.format("delta").load(gold_path)
 print(f"Loaded {df.count()} gold transactions")
 
-CATEGORIES = ["Food", "Transport", "Entertainment", "Healthcare", "Housing", "Income", "Transfer", "Other"]
+# Housing (rent, utilities) is deliberately left out of the anomaly features: those
+# payments are scheduled, so they showed up as spending spikes and caused most of the
+# model's false positives. They still count toward spend totals in notebook 05 and dbt.
+RECURRING_BILL_CATEGORIES = ["Housing"]
+CATEGORIES = ["Food", "Transport", "Entertainment", "Healthcare", "Income", "Transfer", "Other"]
 
 # COMMAND ----------
 # Daily aggregates per user
@@ -40,7 +44,7 @@ window_30d_day = (
     .rangeBetween(-30 * 86400, 0)
 )
 
-df_debits = df.filter(F.col("is_debit"))
+df_debits = df.filter(F.col("is_debit") & ~F.col("category").isin(RECURRING_BILL_CATEGORIES))
 
 df_daily = (
     df_debits
@@ -109,7 +113,7 @@ df_weekend = df_diversity.withColumn(
 # Large transaction flag: amount > mean + 2*std over rolling 30d
 df_stats = (
     df
-    .filter(F.col("is_debit"))
+    .filter(F.col("is_debit") & ~F.col("category").isin(RECURRING_BILL_CATEGORIES))
     .groupBy("user_id")
     .agg(
         F.avg("amount_abs").alias("global_mean"),

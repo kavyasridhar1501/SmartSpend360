@@ -51,7 +51,6 @@ FEATURE_COLS = [
     "ratio_transport",
     "ratio_entertainment",
     "ratio_healthcare",
-    "ratio_housing",
     "ratio_other",
     "day_of_week",
     "is_weekend",
